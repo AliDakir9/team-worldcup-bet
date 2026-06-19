@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pronostics • Coupe du Monde 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --gold: #f5c518;
+    --gold-dim: #7a6209;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #facc15;
+    --blue: #3b82f6;
+    --text: #f0f4ff;
+    --text-dim: #64748b;
+    --text-mid: #94a3b8;
+    --accent: #e63946;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  /* ── AUTH SCREEN ── */
+  .auth-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at 50% 0%, #0f1f3d 0%, #0a0e1a 70%);
+  }
+  .auth-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 400px;
+  }
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .auth-logo .trophy { font-size: 48px; display: block; margin-bottom: 8px; }
+  .auth-logo .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+  .auth-logo .sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .auth-tab {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    color: var(--text-dim);
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .auth-tab.active { background: var(--border); color: var(--text); }
+  .auth-field { margin-bottom: 14px; }
+  .auth-field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .auth-field select,
+  .auth-field input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+  }
+  .auth-field input:focus,
+  .auth-field select:focus { outline: none; border-color: var(--gold); }
+  .auth-btn {
+    width: 100%;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Inter', sans-serif;
+    margin-top: 4px;
+    transition: opacity 0.2s;
+  }
+  .auth-btn:hover { opacity: 0.85; }
+  .auth-error {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+  }
+  .auth-success {
+    color: var(--green);
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+  }
+
+  /* ── APP (hidden until logged in) ── */
+  #app { display: none; }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1f3d 50%, #0a0e1a 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-block { display: flex; align-items: center; gap: 10px; }
+  .trophy-sm { font-size: 28px; }
+  .logo-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--gold); line-height: 1; }
+  .logo-sub { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .user-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+  }
+  .logout-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 14px 24px 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    white-space: nowrap;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── MAIN ── */
+  .main { padding: 24px; max-width: 960px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── CLASSEMENT ── */
+  .ranking-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 2px; color: var(--gold); margin-bottom: 20px; }
+  .ranking-table { width: 100%; border-collapse: collapse; }
+  .ranking-table th { text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+  .ranking-table td { padding: 14px; border-bottom: 1px solid var(--border); }
+  .ranking-table tr:hover td { background: var(--surface2); }
+  .rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 22px; width: 40px; }
+  .rank-1 .rank-num { color: var(--gold); }
+  .rank-2 .rank-num { color: #94a3b8; }
+  .rank-3 .rank-num { color: #b45309; }
+  .player-name { font-size: 15px; font-weight: 600; }
+  .player-pts { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--gold); }
+  .player-pts span { font-size: 12px; color: var(--text-dim); font-family: 'Inter', sans-serif; }
+
+  /* ── MATCHES ── */
+  .phase-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--accent); margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .day-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); margin: 20px 0 8px; }
+  .match-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; transition: border-color 0.2s; }
+  .match-card:hover { border-color: var(--gold-dim); }
+  .match-card.saved { border-color: var(--green); }
+  .match-card.locked { opacity: 0.6; }
+  .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px; }
+  .match-id { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .match-time { font-size: 11px; color: var(--blue); font-weight: 500; }
+  .match-status { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-open { background: rgba(34,197,94,0.15); color: var(--green); }
+  .status-locked { background: rgba(239,68,68,0.15); color: var(--red); }
+  .teams-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .team { flex: 1; text-align: center; }
+  .team-name { font-size: 13px; font-weight: 600; }
+  .score-inputs { display: flex; align-items: center; gap: 8px; }
+  .score-input { width: 48px; height: 48px; text-align: center; font-size: 20px; font-weight: 700; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-family: 'Bebas Neue', sans-serif; }
+  .score-input:focus { outline: none; border-color: var(--gold); }
+  .score-input:disabled { opacity: 0.4; cursor: not-allowed; }
+  .score-sep { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--text-dim); }
+  .extras-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .extra-field label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 4px; }
+  .extra-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'Inter', sans-serif; }
+  .extra-field input:focus { outline: none; border-color: var(--gold); }
+  .extra-field input:disabled { opacity: 0.4; cursor: not-allowed; }
+  .optional-badge { font-size: 9px; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 4px; margin-left: 4px; vertical-align: middle; }
+  .save-btn { background: var(--gold); color: #000; border: none; padding: 8px 20px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.2s; font-family: 'Inter', sans-serif; }
+  .save-btn:hover { opacity: 0.85; }
+  .save-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* pronos reveal */
+  .pronos-reveal { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .pronos-reveal h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 8px; }
+  .prono-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 8px; flex-wrap: wrap; }
+  .prono-player { font-weight: 600; color: var(--text-mid); min-width: 70px; }
+  .prono-score { font-family: 'Bebas Neue', sans-serif; font-size: 16px; }
+  .prono-pts { font-size: 11px; color: var(--gold); font-weight: 700; min-width: 40px; text-align: right; }
+  .prono-details { font-size: 10px; color: var(--text-dim); flex: 1; }
+  .hidden-prono { color: var(--text-dim); font-style: italic; font-size: 11px; }
+  .my-prono { background: rgba(245,197,24,0.06); border-radius: 4px; padding: 3px 6px; }
+
+  /* ── ADMIN ── */
+  .admin-match-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
+  .admin-match-card.has-result { border-color: var(--green); }
+  .admin-teams { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .admin-meta { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; }
+  .admin-inputs { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 8px; margin-bottom: 10px; }
+  .admin-field label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 4px; }
+  .admin-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; }
+  .admin-field input:focus { outline: none; border-color: var(--green); }
+  .admin-save-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+  .admin-save-btn:hover { border-color: var(--green); color: var(--green); }
+  .result-saved-badge { font-size: 11px; color: var(--green); margin-left: 8px; }
+
+  /* ── CONFIG ── */
+  .config-section { max-width: 480px; }
+  .config-section h2 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); margin-bottom: 20px; letter-spacing: 2px; }
+  .config-field { margin-bottom: 16px; }
+  .config-field label { display: block; font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .config-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; }
+  .config-field input:focus { outline: none; border-color: var(--gold); }
+  .config-btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-family: 'Inter', sans-serif; }
+  .config-btn:hover { opacity: 0.85; }
+
+  /* ── SHARED ── */
+  .info-banner { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: var(--text-mid); margin-bottom: 20px; line-height: 1.6; }
+  .points-legend { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 24px; }
+  .points-legend h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 12px; }
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+  .legend-item { display: flex; justify-content: space-between; font-size: 12px; }
+  .legend-pts { font-weight: 700; color: var(--gold); }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 12px 20px; border-radius: 8px; font-size: 13px; z-index: 999; display: none; animation: fadein 0.3s ease; }
+  .toast.show { display: block; }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+  @keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .recalc-btn { background: var(--green); color: #000; border: none; padding: 11px 24px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-family: 'Inter', sans-serif; transition: opacity 0.2s; }
+  .recalc-btn:hover { opacity: 0.85; }
+
+  @media (max-width: 600px) {
+    .main { padding: 16px; }
+    header { padding: 12px 16px; }
+    .extras-grid { grid-template-columns: 1fr 1fr; }
+    .auth-box { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══ -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <span class="trophy">🏆</span>
+      <div class="title">PRONOSTICS</div>
+      <div class="sub">Coupe du Monde 2026</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Créer un compte</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <div class="auth-field">
+        <label>Prénom</label>
+        <select id="loginName">
+          <option value="">-- Choisir --</option>
+          <option>Ryad</option><option>Imane</option><option>Jamal</option><option>Zineb</option><option>Abdelali</option>
+        </select>
+      </div>
+      <div class="auth-field">
+        <label>Mot de passe</label>
+        <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+      <div id="loginError" class="auth-error"></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" style="display:none;">
+      <div class="auth-field">
+        <label>Prénom</label>
+        <select id="registerName">
+          <option value="">-- Choisir --</option>
+          <option>Ryad</option><option>Imane</option><option>Jamal</option><option>Zineb</option><option>Abdelali</option>
+        </select>
+      </div>
+      <div class="auth-field">
+        <label>Choisir un mot de passe</label>
+        <input type="password" id="registerPwd" placeholder="Minimum 4 caractères">
+      </div>
+      <div class="auth-field">
+        <label>Confirmer le mot de passe</label>
+        <input type="password" id="registerPwd2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Créer mon compte</button>
+      <div id="registerError" class="auth-error"></div>
+      <div id="registerSuccess" class="auth-success"></div>
+    </div>
+
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;text-align:center;">⚙️ Configuration Google Sheet</div>
+      <input type="text" id="authSheetUrl" placeholder="https://script.google.com/macros/s/..." 
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;"
+        oninput="saveConfigFromAuth()">
+      <div id="authConfigStatus" style="font-size:11px;margin-top:6px;text-align:center;color:var(--text-dim);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <header>
+    <div class="logo-block">
+      <span class="trophy-sm">🏆</span>
+      <div>
+        <div class="logo-title">PRONOSTICS WC2026</div>
+        <div class="logo-sub">Disway · Équipe digitale</div>
+      </div>
+    </div>
+    <div class="user-info">
+      <span class="user-badge" id="userBadge"></span>
+      <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('classement')">🏅 Classement</button>
+    <button class="tab" onclick="switchTab('matches')">⚽ Matchs</button>
+    <button class="tab" onclick="switchTab('config')">⚙️ Config</button>
+    <button class="tab" id="adminTab" style="display:none;" onclick="switchTab('admin')">🔐 Admin</button>
+  </div>
+
+  <div class="main">
+    <div id="toast" class="toast"></div>
+
+    <!-- CLASSEMENT -->
+    <div id="section-classement" class="section active">
+      <div class="ranking-title">CLASSEMENT GÉNÉRAL</div>
+      <div class="info-banner">🔒 Les pronostics sont masqués jusqu'au coup d'envoi. Une fois le match commencé, tout le monde voit les pronostics de chacun.</div>
+      <div id="rankingContainer"><p style="color:var(--text-dim);font-size:13px;">Configurez d'abord l'URL du Google Sheet dans ⚙️ Config.</p></div>
+    </div>
+
+    <!-- MATCHS -->
+    <div id="section-matches" class="section">
+      <div class="points-legend">
+        <h3>Barème des points</h3>
+        <div class="legend-grid">
+          <div class="legend-item"><span>Score exact</span><span class="legend-pts">+5 pts</span></div>
+          <div class="legend-item"><span>Bonne tendance (V/N/D)</span><span class="legend-pts">+2 pts</span></div>
+          <div class="legend-item"><span>Buteur correct</span><span class="legend-pts">+1 pt</span></div>
+          <div class="legend-item"><span>Nb cartons jaunes exact</span><span class="legend-pts">+1 pt</span></div>
+          <div class="legend-item"><span>Nb cartons rouges exact</span><span class="legend-pts">+1 pt</span></div>
+          <div class="legend-item"><span>Nb corners exact</span><span class="legend-pts">+1 pt</span></div>
+        </div>
+      </div>
+      <div id="matchesContainer"></div>
+    </div>
+
+    <!-- CONFIG -->
+    <div id="section-config" class="section">
+      <div class="config-section">
+        <h2>CONFIGURATION</h2>
+        <div class="info-banner">Cette app utilise <strong>Google Sheets</strong> comme base de données. Collez ici l'URL de votre Web App Apps Script.</div>
+        <div class="config-field">
+          <label>URL du Web App Google (Apps Script)</label>
+          <input type="text" id="sheetUrl" placeholder="https://script.google.com/macros/s/..." oninput="saveConfig()">
+        </div>
+        <button class="config-btn" onclick="testConnection()">Tester la connexion</button>
+        <div class="config-note" id="configNote" style="margin-top:14px;font-size:12px;display:none;"></div>
+        <br><br>
+        <div style="border-top:1px solid var(--border);padding-top:20px;">
+          <h3 style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text-mid);">📋 Guide d'installation rapide</h3>
+          <ol style="font-size:12px;color:var(--text-dim);line-height:2.2;padding-left:18px;">
+            <li>Crée un Google Sheet → <strong style="color:var(--text)">Extensions → Apps Script</strong></li>
+            <li>Colle le contenu du fichier <strong style="color:var(--text)">google_apps_script_WC2026.js</strong></li>
+            <li><strong style="color:var(--text)">Déployer → Nouveau déploiement → Application Web</strong></li>
+            <li>Accès : <strong style="color:var(--text)">Tout le monde</strong> - copie l'URL</li>
+            <li>Colle l'URL ci-dessus et teste la connexion</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="section-admin" class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <div class="ranking-title" style="margin:0;">SAISIE DES RÉSULTATS</div>
+        <button class="recalc-btn" onclick="recalcAll()">🔄 Calculer &amp; MAJ classement</button>
+      </div>
+      <div class="info-banner">Saisissez les résultats réels après chaque match (seul le score est obligatoire), puis cliquez sur <strong>"Calculer &amp; MAJ classement"</strong>.</div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="showFutureMatches" onchange="renderAdminMatches()">
+          Afficher aussi les matchs à venir
+        </label>
+      </div>
+      <div id="adminMatchesContainer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// MATCHES DATA - WC2026 - tous en GMT+1 (heure Maroc)
+// ══════════════════════════════════════════════════════
+const MATCHES = [
+  {id:"M001",phase:"Phase de groupes",date:"2026-06-11",ko:"20:00",home:"Mexique",away:"Afrique du Sud",group:"A",venue:"Mexico City"},
+  {id:"M002",phase:"Phase de groupes",date:"2026-06-12",ko:"03:00",home:"Corée du Sud",away:"Tchéquie",group:"A",venue:"Guadalajara"},
+  {id:"M003",phase:"Phase de groupes",date:"2026-06-12",ko:"20:00",home:"Canada",away:"Bosnie-Herzégovine",group:"B",venue:"Toronto"},
+  {id:"M004",phase:"Phase de groupes",date:"2026-06-13",ko:"02:00",home:"USA",away:"Paraguay",group:"D",venue:"Los Angeles"},
+  {id:"M005",phase:"Phase de groupes",date:"2026-06-13",ko:"20:00",home:"Qatar",away:"Suisse",group:"B",venue:"San Francisco"},
+  {id:"M006",phase:"Phase de groupes",date:"2026-06-13",ko:"23:00",home:"Brésil",away:"Maroc",group:"C",venue:"New York/NJ"},
+  {id:"M007",phase:"Phase de groupes",date:"2026-06-14",ko:"02:00",home:"Haïti",away:"Écosse",group:"C",venue:"Boston"},
+  {id:"M008",phase:"Phase de groupes",date:"2026-06-14",ko:"05:00",home:"Australie",away:"Turquie",group:"D",venue:"Vancouver"},
+  {id:"M009",phase:"Phase de groupes",date:"2026-06-14",ko:"18:00",home:"Allemagne",away:"Curaçao",group:"E",venue:"Houston"},
+  {id:"M010",phase:"Phase de groupes",date:"2026-06-14",ko:"21:00",home:"Pays-Bas",away:"Japon",group:"F",venue:"Dallas"},
+  {id:"M011",phase:"Phase de groupes",date:"2026-06-15",ko:"00:00",home:"Côte d'Ivoire",away:"Équateur",group:"E",venue:"Philadelphia"},
+  {id:"M012",phase:"Phase de groupes",date:"2026-06-15",ko:"03:00",home:"Suède",away:"Tunisie",group:"F",venue:"Monterrey"},
+  {id:"M013",phase:"Phase de groupes",date:"2026-06-15",ko:"17:00",home:"Espagne",away:"Cap-Vert",group:"H",venue:"Atlanta"},
+  {id:"M014",phase:"Phase de groupes",date:"2026-06-15",ko:"20:00",home:"Belgique",away:"Égypte",group:"G",venue:"Vancouver"},
+  {id:"M015",phase:"Phase de groupes",date:"2026-06-15",ko:"23:00",home:"Arabie Saoudite",away:"Uruguay",group:"H",venue:"Miami"},
+  {id:"M016",phase:"Phase de groupes",date:"2026-06-16",ko:"02:00",home:"Iran",away:"Nouvelle-Zélande",group:"G",venue:"Los Angeles"},
+  {id:"M017",phase:"Phase de groupes",date:"2026-06-16",ko:"20:00",home:"France",away:"Sénégal",group:"I",venue:"New York/NJ"},
+  {id:"M018",phase:"Phase de groupes",date:"2026-06-16",ko:"23:00",home:"Irak",away:"Norvège",group:"I",venue:"Boston"},
+  {id:"M019",phase:"Phase de groupes",date:"2026-06-17",ko:"02:00",home:"Argentine",away:"Algérie",group:"J",venue:"Kansas City"},
+  {id:"M020",phase:"Phase de groupes",date:"2026-06-17",ko:"05:00",home:"Autriche",away:"Jordanie",group:"J",venue:"San Francisco"},
+  {id:"M021",phase:"Phase de groupes",date:"2026-06-17",ko:"18:00",home:"Portugal",away:"RD Congo",group:"K",venue:"Houston"},
+  {id:"M022",phase:"Phase de groupes",date:"2026-06-17",ko:"21:00",home:"Angleterre",away:"Croatie",group:"L",venue:"Dallas"},
+  {id:"M023",phase:"Phase de groupes",date:"2026-06-18",ko:"00:00",home:"Ghana",away:"Panama",group:"L",venue:"Toronto"},
+  {id:"M024",phase:"Phase de groupes",date:"2026-06-18",ko:"03:00",home:"Ouzbékistan",away:"Colombie",group:"K",venue:"Mexico City"},
+  {id:"M025",phase:"Phase de groupes",date:"2026-06-18",ko:"17:00",home:"Tchéquie",away:"Afrique du Sud",group:"A",venue:"Atlanta"},
+  {id:"M026",phase:"Phase de groupes",date:"2026-06-18",ko:"20:00",home:"Suisse",away:"Bosnie-Herzégovine",group:"B",venue:"Los Angeles"},
+  {id:"M027",phase:"Phase de groupes",date:"2026-06-18",ko:"23:00",home:"Canada",away:"Qatar",group:"B",venue:"Vancouver"},
+  {id:"M028",phase:"Phase de groupes",date:"2026-06-19",ko:"02:00",home:"Mexique",away:"Corée du Sud",group:"A",venue:"Guadalajara"},
+  {id:"M029",phase:"Phase de groupes",date:"2026-06-19",ko:"20:00",home:"USA",away:"Australie",group:"D",venue:"Seattle"},
+  {id:"M030",phase:"Phase de groupes",date:"2026-06-19",ko:"23:00",home:"Écosse",away:"Maroc",group:"C",venue:"Boston"},
+  {id:"M031",phase:"Phase de groupes",date:"2026-06-20",ko:"01:30",home:"Brésil",away:"Haïti",group:"C",venue:"Philadelphia"},
+  {id:"M032",phase:"Phase de groupes",date:"2026-06-20",ko:"04:00",home:"Turquie",away:"Paraguay",group:"D",venue:"San Francisco"},
+  {id:"M033",phase:"Phase de groupes",date:"2026-06-20",ko:"18:00",home:"Pays-Bas",away:"Suède",group:"F",venue:"Houston"},
+  {id:"M034",phase:"Phase de groupes",date:"2026-06-20",ko:"21:00",home:"Allemagne",away:"Côte d'Ivoire",group:"E",venue:"Toronto"},
+  {id:"M035",phase:"Phase de groupes",date:"2026-06-21",ko:"04:00",home:"Équateur",away:"Curaçao",group:"E",venue:"Kansas City"},
+  {id:"M036",phase:"Phase de groupes",date:"2026-06-21",ko:"05:00",home:"Tunisie",away:"Japon",group:"F",venue:"Monterrey"},
+  {id:"M037",phase:"Phase de groupes",date:"2026-06-21",ko:"17:00",home:"Espagne",away:"Arabie Saoudite",group:"H",venue:"Atlanta"},
+  {id:"M038",phase:"Phase de groupes",date:"2026-06-21",ko:"20:00",home:"Belgique",away:"Iran",group:"G",venue:"Los Angeles"},
+  {id:"M039",phase:"Phase de groupes",date:"2026-06-21",ko:"23:00",home:"Uruguay",away:"Cap-Vert",group:"H",venue:"Miami"},
+  {id:"M040",phase:"Phase de groupes",date:"2026-06-22",ko:"02:00",home:"Nouvelle-Zélande",away:"Égypte",group:"G",venue:"Vancouver"},
+  {id:"M041",phase:"Phase de groupes",date:"2026-06-22",ko:"18:00",home:"Argentine",away:"Autriche",group:"J",venue:"Dallas"},
+  {id:"M042",phase:"Phase de groupes",date:"2026-06-22",ko:"22:00",home:"France",away:"Irak",group:"I",venue:"Philadelphia"},
+  {id:"M043",phase:"Phase de groupes",date:"2026-06-23",ko:"01:00",home:"Norvège",away:"Sénégal",group:"I",venue:"New York/NJ"},
+  {id:"M044",phase:"Phase de groupes",date:"2026-06-23",ko:"04:00",home:"Jordanie",away:"Algérie",group:"J",venue:"San Francisco"},
+  {id:"M045",phase:"Phase de groupes",date:"2026-06-23",ko:"18:00",home:"Portugal",away:"Ouzbékistan",group:"K",venue:"Houston"},
+  {id:"M046",phase:"Phase de groupes",date:"2026-06-23",ko:"21:00",home:"Angleterre",away:"Ghana",group:"L",venue:"Boston"},
+  {id:"M047",phase:"Phase de groupes",date:"2026-06-24",ko:"00:00",home:"Panama",away:"Croatie",group:"L",venue:"Toronto"},
+  {id:"M048",phase:"Phase de groupes",date:"2026-06-24",ko:"03:00",home:"Colombie",away:"RD Congo",group:"K",venue:"Guadalajara"},
+  {id:"M049",phase:"Phase de groupes",date:"2026-06-24",ko:"20:00",home:"Suisse",away:"Canada",group:"B",venue:"Vancouver"},
+  {id:"M050",phase:"Phase de groupes",date:"2026-06-24",ko:"20:00",home:"Bosnie-Herzégovine",away:"Qatar",group:"B",venue:"Seattle"},
+  {id:"M051",phase:"Phase de groupes",date:"2026-06-24",ko:"23:00",home:"Écosse",away:"Brésil",group:"C",venue:"Miami"},
+  {id:"M052",phase:"Phase de groupes",date:"2026-06-24",ko:"23:00",home:"Maroc",away:"Haïti",group:"C",venue:"Atlanta"},
+  {id:"M053",phase:"Phase de groupes",date:"2026-06-25",ko:"02:00",home:"Tchéquie",away:"Mexique",group:"A",venue:"Mexico City"},
+  {id:"M054",phase:"Phase de groupes",date:"2026-06-25",ko:"02:00",home:"Afrique du Sud",away:"Corée du Sud",group:"A",venue:"Monterrey"},
+  {id:"M055",phase:"Phase de groupes",date:"2026-06-25",ko:"21:00",home:"Équateur",away:"Allemagne",group:"E",venue:"New York/NJ"},
+  {id:"M056",phase:"Phase de groupes",date:"2026-06-25",ko:"21:00",home:"Curaçao",away:"Côte d'Ivoire",group:"E",venue:"Philadelphia"},
+  {id:"M057",phase:"Phase de groupes",date:"2026-06-26",ko:"00:00",home:"Japon",away:"Suède",group:"F",venue:"Dallas"},
+  {id:"M058",phase:"Phase de groupes",date:"2026-06-26",ko:"00:00",home:"Tunisie",away:"Pays-Bas",group:"F",venue:"Kansas City"},
+  {id:"M059",phase:"Phase de groupes",date:"2026-06-26",ko:"03:00",home:"Turquie",away:"USA",group:"D",venue:"Los Angeles"},
+  {id:"M060",phase:"Phase de groupes",date:"2026-06-26",ko:"03:00",home:"Paraguay",away:"Australie",group:"D",venue:"San Francisco"},
+  {id:"M061",phase:"Phase de groupes",date:"2026-06-26",ko:"20:00",home:"Norvège",away:"France",group:"I",venue:"Boston"},
+  {id:"M062",phase:"Phase de groupes",date:"2026-06-26",ko:"20:00",home:"Sénégal",away:"Irak",group:"I",venue:"Toronto"},
+  {id:"M063",phase:"Phase de groupes",date:"2026-06-27",ko:"01:00",home:"Cap-Vert",away:"Arabie Saoudite",group:"H",venue:"Houston"},
+  {id:"M064",phase:"Phase de groupes",date:"2026-06-27",ko:"01:00",home:"Uruguay",away:"Espagne",group:"H",venue:"Guadalajara"},
+  {id:"M065",phase:"Phase de groupes",date:"2026-06-27",ko:"04:00",home:"Égypte",away:"Iran",group:"G",venue:"Seattle"},
+  {id:"M066",phase:"Phase de groupes",date:"2026-06-27",ko:"04:00",home:"Nouvelle-Zélande",away:"Belgique",group:"G",venue:"Vancouver"},
+  {id:"M067",phase:"Phase de groupes",date:"2026-06-27",ko:"22:00",home:"Panama",away:"Angleterre",group:"L",venue:"New York/NJ"},
+  {id:"M068",phase:"Phase de groupes",date:"2026-06-27",ko:"22:00",home:"Croatie",away:"Ghana",group:"L",venue:"Philadelphia"},
+  {id:"M069",phase:"Phase de groupes",date:"2026-06-28",ko:"00:30",home:"Colombie",away:"Portugal",group:"K",venue:"Miami"},
+  {id:"M070",phase:"Phase de groupes",date:"2026-06-28",ko:"00:30",home:"RD Congo",away:"Ouzbékistan",group:"K",venue:"Atlanta"},
+  {id:"M071",phase:"Phase de groupes",date:"2026-06-28",ko:"03:00",home:"Algérie",away:"Autriche",group:"J",venue:"Kansas City"},
+  {id:"M072",phase:"Phase de groupes",date:"2026-06-28",ko:"03:00",home:"Jordanie",away:"Argentine",group:"J",venue:"Dallas"},
+  {id:"M073",phase:"Huitièmes de finale",date:"2026-06-28",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Los Angeles"},
+  {id:"M074",phase:"Huitièmes de finale",date:"2026-06-29",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Houston"},
+  {id:"M075",phase:"Huitièmes de finale",date:"2026-06-29",ko:"21:30",home:"À déterminer",away:"À déterminer",venue:"Boston"},
+  {id:"M076",phase:"Huitièmes de finale",date:"2026-06-30",ko:"02:00",home:"À déterminer",away:"À déterminer",venue:"Monterrey"},
+  {id:"M077",phase:"Huitièmes de finale",date:"2026-06-30",ko:"18:00",home:"À déterminer",away:"À déterminer",venue:"Dallas"},
+  {id:"M078",phase:"Huitièmes de finale",date:"2026-06-30",ko:"22:00",home:"À déterminer",away:"À déterminer",venue:"New York/NJ"},
+  {id:"M079",phase:"Huitièmes de finale",date:"2026-07-01",ko:"02:00",home:"À déterminer",away:"À déterminer",venue:"Mexico City"},
+  {id:"M080",phase:"Huitièmes de finale",date:"2026-07-01",ko:"17:00",home:"À déterminer",away:"À déterminer",venue:"Atlanta"},
+  {id:"M081",phase:"Huitièmes de finale",date:"2026-07-01",ko:"21:00",home:"À déterminer",away:"À déterminer",venue:"Seattle"},
+  {id:"M082",phase:"Huitièmes de finale",date:"2026-07-01",ko:"21:00",home:"À déterminer",away:"À déterminer",venue:"San Francisco"},
+  {id:"M083",phase:"Huitièmes de finale",date:"2026-07-02",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Los Angeles"},
+  {id:"M084",phase:"Huitièmes de finale",date:"2026-07-03",ko:"00:00",home:"À déterminer",away:"À déterminer",venue:"Toronto"},
+  {id:"M085",phase:"Huitièmes de finale",date:"2026-07-03",ko:"04:00",home:"À déterminer",away:"À déterminer",venue:"Vancouver"},
+  {id:"M086",phase:"Huitièmes de finale",date:"2026-07-03",ko:"19:00",home:"À déterminer",away:"À déterminer",venue:"Dallas"},
+  {id:"M087",phase:"Huitièmes de finale",date:"2026-07-03",ko:"23:00",home:"À déterminer",away:"À déterminer",venue:"Miami"},
+  {id:"M088",phase:"Huitièmes de finale",date:"2026-07-04",ko:"02:30",home:"À déterminer",away:"À déterminer",venue:"Kansas City"},
+  {id:"M089",phase:"Quarts de finale",date:"2026-07-04",ko:"18:00",home:"À déterminer",away:"À déterminer",venue:"Houston"},
+  {id:"M090",phase:"Quarts de finale",date:"2026-07-04",ko:"22:00",home:"À déterminer",away:"À déterminer",venue:"Philadelphia"},
+  {id:"M091",phase:"Quarts de finale",date:"2026-07-05",ko:"21:00",home:"À déterminer",away:"À déterminer",venue:"New York/NJ"},
+  {id:"M092",phase:"Quarts de finale",date:"2026-07-06",ko:"01:00",home:"À déterminer",away:"À déterminer",venue:"Mexico City"},
+  {id:"M093",phase:"Quarts de finale",date:"2026-07-06",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Dallas"},
+  {id:"M094",phase:"Quarts de finale",date:"2026-07-07",ko:"01:00",home:"À déterminer",away:"À déterminer",venue:"Seattle"},
+  {id:"M095",phase:"Quarts de finale",date:"2026-07-07",ko:"17:00",home:"À déterminer",away:"À déterminer",venue:"Atlanta"},
+  {id:"M096",phase:"Quarts de finale",date:"2026-07-07",ko:"21:00",home:"À déterminer",away:"À déterminer",venue:"Vancouver"},
+  {id:"M097",phase:"Quarts de finale (2e tour)",date:"2026-07-09",ko:"21:00",home:"À déterminer",away:"À déterminer",venue:"Boston"},
+  {id:"M098",phase:"Quarts de finale (2e tour)",date:"2026-07-10",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Los Angeles"},
+  {id:"M099",phase:"Quarts de finale (2e tour)",date:"2026-07-11",ko:"21:00",home:"À déterminer",away:"À déterminer",venue:"Miami"},
+  {id:"M100",phase:"Quarts de finale (2e tour)",date:"2026-07-12",ko:"02:00",home:"À déterminer",away:"À déterminer",venue:"Kansas City"},
+  {id:"M101",phase:"Demi-finales",date:"2026-07-14",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Dallas"},
+  {id:"M102",phase:"Demi-finales",date:"2026-07-15",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"Atlanta"},
+  {id:"M103",phase:"Match 3e place",date:"2026-07-18",ko:"22:00",home:"À déterminer",away:"À déterminer",venue:"Miami"},
+  {id:"M104",phase:"Finale",date:"2026-07-19",ko:"20:00",home:"À déterminer",away:"À déterminer",venue:"New York/NJ"},
+];
+
+const PLAYERS = ["Ryad","Imane","Jamal","Zineb","Abdelali"];
+const ADMIN_USER = "Ryad";
+const ADMIN_PASSWORD = "disway2026";
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzTMf426q5EDjqwL_bga_NTb-nEqRA6sO7qVPBodbfRzY94L-yaSzYL6FLAVbM9Qgk/exec';
+let state = {
+  scriptUrl: localStorage.getItem('wc2026_url') || DEFAULT_URL,
+  currentUser: null,
+  allPronos: {},
+  allResults: {},
+  accounts: {},
+};
+
+// ══════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════
+function matchKoTimestamp(match) {
+  const d = new Date(match.date + 'T' + match.ko + ':00');
+  return d.getTime() - 3600000; // GMT+1 -> UTC
+}
+function isMatchLocked(match) { return Date.now() >= matchKoTimestamp(match); }
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
+}
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ══════════════════════════════════════
+// SIMPLE HASH (pas du vrai crypto, suffisant pour usage interne)
+// ══════════════════════════════════════
+async function hashPassword(pwd) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd + 'wc2026salt'));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ══════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.querySelectorAll('.auth-tab')[tab === 'login' ? 0 : 1].classList.add('active');
+}
+
+async function doRegister() {
+  const name = document.getElementById('registerName').value;
+  const pwd  = document.getElementById('registerPwd').value;
+  const pwd2 = document.getElementById('registerPwd2').value;
+  const err  = document.getElementById('registerError');
+  const ok   = document.getElementById('registerSuccess');
+  err.style.display = 'none'; ok.style.display = 'none';
+
+  if (!name) { err.textContent = 'Choisis ton prénom.'; err.style.display = 'block'; return; }
+  if (pwd.length < 4) { err.textContent = 'Mot de passe trop court (min. 4 caractères).'; err.style.display = 'block'; return; }
+  if (pwd !== pwd2) { err.textContent = 'Les mots de passe ne correspondent pas.'; err.style.display = 'block'; return; }
+  if (!state.scriptUrl) { err.textContent = 'URL Google Sheet non configurée. Connecte-toi d\'abord en Config.'; err.style.display = 'block'; return; }
+
+  // Check if account already exists
+  await loadAccounts();
+  if (state.accounts[name]) { err.textContent = 'Un compte existe déjà pour ' + name + '. Utilise la connexion.'; err.style.display = 'block'; return; }
+
+  const hash = await hashPassword(pwd);
+  try {
+    const res = await fetch(state.scriptUrl, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'createAccount', player: name, hash }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      ok.textContent = '✅ Compte créé ! Tu peux maintenant te connecter.';
+      ok.style.display = 'block';
+      setTimeout(() => switchAuthTab('login'), 1500);
+    } else {
+      err.textContent = 'Erreur : ' + (data.error || 'inconnue');
+      err.style.display = 'block';
+    }
+  } catch(e) {
+    err.textContent = 'Erreur réseau. Vérifie l\'URL Google Sheet.';
+    err.style.display = 'block';
+  }
+}
+
+async function doLogin() {
+  const name = document.getElementById('loginName').value;
+  const pwd  = document.getElementById('loginPwd').value;
+  const err  = document.getElementById('loginError');
+  err.style.display = 'none';
+
+  if (!name) { err.textContent = 'Choisis ton prénom.'; err.style.display = 'block'; return; }
+  if (!pwd)  { err.textContent = 'Saisis ton mot de passe.'; err.style.display = 'block'; return; }
+  if (!state.scriptUrl) { err.textContent = 'URL Google Sheet non configurée. Demande à Ryad.'; err.style.display = 'block'; return; }
+
+  err.textContent = ''; err.style.display = 'block';
+  err.style.color = 'var(--text-dim)';
+  err.textContent = 'Connexion...';
+
+  await loadAccounts();
+  const hash = await hashPassword(pwd);
+
+  if (!state.accounts[name]) {
+    err.style.color = 'var(--red)';
+    err.textContent = 'Aucun compte trouvé pour ' + name + '. Crée un compte d\'abord.';
+    return;
+  }
+  if (state.accounts[name] !== hash) {
+    err.style.color = 'var(--red)';
+    err.textContent = 'Mot de passe incorrect.';
+    return;
+  }
+
+  // Login success
+  state.currentUser = name;
+  localStorage.setItem('wc2026_user', name);
+  localStorage.setItem('wc2026_hash', hash);
+  launchApp();
+}
+
+async function autoLogin() {
+  const savedUser = localStorage.getItem('wc2026_user');
+  const savedHash = localStorage.getItem('wc2026_hash');
+  if (!savedUser || !savedHash || !state.scriptUrl) return false;
+  await loadAccounts();
+  if (state.accounts[savedUser] === savedHash) {
+    state.currentUser = savedUser;
+    return true;
+  }
+  return false;
+}
+
+function doLogout() {
+  state.currentUser = null;
+  localStorage.removeItem('wc2026_user');
+  localStorage.removeItem('wc2026_hash');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+}
+
+function launchApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('userBadge').textContent = '👤 ' + state.currentUser;
+  // Show admin tab only for Ryad
+  document.getElementById('adminTab').style.display = state.currentUser === ADMIN_USER ? 'block' : 'none';
+  loadAllData().then(() => { renderMatches(); loadClassement(); });
+}
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const tabs = ['classement','matches','config','admin'];
+  const idx = tabs.indexOf(tab);
+  const visibleTabs = document.querySelectorAll('.tab');
+  // find the right tab button by data
+  visibleTabs.forEach(b => { if(b.getAttribute('onclick') === `switchTab('${tab}')`) b.classList.add('active'); });
+  document.getElementById('section-' + tab).classList.add('active');
+  if (tab === 'classement') loadClassement();
+  if (tab === 'matches') renderMatches();
+  if (tab === 'admin') { loadAllData().then(() => renderAdminMatches()); }
+}
+
+// ══════════════════════════════════════
+// SCORING
+// ══════════════════════════════════════
+function calcPoints(prono, result) {
+  if (!prono || !result) return null;
+  if (prono.scoreH === '' || prono.scoreH === undefined || prono.scoreA === '' || prono.scoreA === undefined) return null;
+  if (result.scoreH === '' || result.scoreH === undefined || result.scoreA === '' || result.scoreA === undefined) return null;
+  let pts = 0;
+  const pH = parseInt(prono.scoreH), pA = parseInt(prono.scoreA);
+  const rH = parseInt(result.scoreH), rA = parseInt(result.scoreA);
+  if (isNaN(pH) || isNaN(pA) || isNaN(rH) || isNaN(rA)) return null;
+
+  if (pH === rH && pA === rA) pts += 5;
+  else {
+    const pT = pH > pA ? 'H' : pH < pA ? 'A' : 'D';
+    const rT = rH > rA ? 'H' : rH < rA ? 'A' : 'D';
+    if (pT === rT) pts += 2;
+  }
+
+  const pSc = (prono.scorers||'').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+  const rSc = (result.scorers||'').toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+  pSc.forEach(s => { if(rSc.includes(s)) pts += 1; });
+
+  if (prono.yCa !== '' && prono.yCa !== undefined && result.yCa !== '' && result.yCa !== undefined && parseInt(prono.yCa) === parseInt(result.yCa)) pts += 1;
+  if (prono.rCa !== '' && prono.rCa !== undefined && result.rCa !== '' && result.rCa !== undefined && parseInt(prono.rCa) === parseInt(result.rCa)) pts += 1;
+  if (prono.corners !== '' && prono.corners !== undefined && result.corners !== '' && result.corners !== undefined && parseInt(prono.corners) === parseInt(result.corners)) pts += 1;
+
+  return pts;
+}
+
+// ══════════════════════════════════════
+// RENDER MATCHES
+// ══════════════════════════════════════
+function renderMatches() {
+  const container = document.getElementById('matchesContainer');
+  const user = state.currentUser;
+  const phaseMap = {};
+  const phases = [];
+  MATCHES.forEach(m => {
+    if (!phaseMap[m.phase]) { phaseMap[m.phase] = {}; phases.push(m.phase); }
+    if (!phaseMap[m.phase][m.date]) phaseMap[m.phase][m.date] = [];
+    phaseMap[m.phase][m.date].push(m);
+  });
+
+  let html = '';
+  phases.forEach(phase => {
+    html += `<div class="phase-label">${phase}</div>`;
+    Object.keys(phaseMap[phase]).sort().forEach(date => {
+      html += `<div class="day-label">${formatDate(date)}</div>`;
+      phaseMap[phase][date].forEach(m => { html += buildMatchCard(m, user); });
+    });
+  });
+  container.innerHTML = html;
+}
+
+function buildMatchCard(m, user) {
+  const locked = isMatchLocked(m);
+  const prono = user ? ((state.allPronos[m.id] || {})[user] || {}) : {};
+  const result = state.allResults[m.id] || {};
+  const hasSaved = prono.scoreH !== undefined && prono.scoreH !== '';
+  const disabled = locked ? 'disabled' : '';
+  const cardClass = ['match-card', locked ? 'locked' : '', hasSaved && !locked ? 'saved' : ''].filter(Boolean).join(' ');
+
+  let statusHtml = locked
+    ? '<span class="match-status status-locked">🔒 Fermé</span>'
+    : '<span class="match-status status-open">✅ Ouvert</span>';
+
+  let pronosHtml = '';
+  if (locked) {
+    pronosHtml = `<div class="pronos-reveal"><h4>Pronostics</h4>`;
+    PLAYERS.forEach(p => {
+      const pp = (state.allPronos[m.id] || {})[p] || null;
+      const pts = calcPoints(pp, result.scoreH !== undefined ? result : null);
+      const isMe = p === user;
+      if (pp && pp.scoreH !== undefined && pp.scoreH !== '') {
+        const details = [
+          pp.scorers ? `⚽ ${pp.scorers}` : '',
+          pp.yCa !== '' && pp.yCa !== undefined ? `🟨${pp.yCa}` : '',
+          pp.rCa !== '' && pp.rCa !== undefined ? `🟥${pp.rCa}` : '',
+          pp.corners !== '' && pp.corners !== undefined ? `🔄${pp.corners}` : '',
+        ].filter(Boolean).join(' ');
+        pronosHtml += `<div class="prono-row${isMe?' my-prono':''}">
+          <span class="prono-player">${isMe ? '★ ' : ''}${p}</span>
+          <span class="prono-score">${pp.scoreH}-${pp.scoreA}</span>
+          <span class="prono-details">${details}</span>
+          <span class="prono-pts">${pts !== null ? pts+' pts' : result.scoreH !== undefined ? '0 pts' : '—'}</span>
+        </div>`;
+      } else {
+        pronosHtml += `<div class="prono-row${isMe?' my-prono':''}"><span class="prono-player">${isMe ? '★ ' : ''}${p}</span><span class="hidden-prono">Pas de pronostic</span></div>`;
+      }
+    });
+    if (result.scoreH !== undefined) {
+      pronosHtml += `<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border);font-size:11px;color:var(--green);">✅ Résultat réel : ${result.scoreH}-${result.scoreA}${result.scorers?' · ⚽ '+result.scorers:''}</div>`;
+    }
+    pronosHtml += `</div>`;
+  }
+
+  return `<div class="${cardClass}" id="card-${m.id}">
+    <div class="match-header">
+      <span class="match-id">${m.id}${m.group ? ' · Grp '+m.group : ''} · ${m.venue}</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="match-time">⏰ ${m.ko} (Maroc)</span>
+        ${statusHtml}
+      </div>
+    </div>
+    <div class="teams-row">
+      <div class="team"><span class="team-name">${m.home}</span></div>
+      <div class="score-inputs">
+        <input class="score-input" type="number" min="0" max="20" id="sH-${m.id}" value="${prono.scoreH??''}" placeholder="—" ${disabled} oninput="markDirty('${m.id}')">
+        <span class="score-sep">:</span>
+        <input class="score-input" type="number" min="0" max="20" id="sA-${m.id}" value="${prono.scoreA??''}" placeholder="—" ${disabled} oninput="markDirty('${m.id}')">
+      </div>
+      <div class="team"><span class="team-name">${m.away}</span></div>
+    </div>
+    <div class="extras-grid">
+      <div class="extra-field">
+        <label>⚽ Buteurs <span class="optional-badge">optionnel</span></label>
+        <input type="text" id="sc-${m.id}" value="${prono.scorers??''}" placeholder="Mbappe, Ronaldo..." ${disabled} oninput="markDirty('${m.id}')">
+      </div>
+      <div class="extra-field">
+        <label>🟨 Cartons jaunes <span class="optional-badge">optionnel</span></label>
+        <input type="number" min="0" id="yc-${m.id}" value="${prono.yCa??''}" placeholder="ex: 3" ${disabled} oninput="markDirty('${m.id}')">
+      </div>
+      <div class="extra-field">
+        <label>🟥 Cartons rouges <span class="optional-badge">optionnel</span></label>
+        <input type="number" min="0" id="rc-${m.id}" value="${prono.rCa??''}" placeholder="ex: 0" ${disabled} oninput="markDirty('${m.id}')">
+      </div>
+      <div class="extra-field">
+        <label>🔄 Corners <span class="optional-badge">optionnel</span></label>
+        <input type="number" min="0" id="co-${m.id}" value="${prono.corners??''}" placeholder="ex: 10" ${disabled} oninput="markDirty('${m.id}')">
+      </div>
+    </div>
+    ${!locked ? `<button class="save-btn" id="btn-${m.id}" onclick="saveProno('${m.id}')" disabled>Enregistrer</button>` : ''}
+    ${pronosHtml}
+  </div>`;
+}
+
+function markDirty(matchId) {
+  const btn = document.getElementById('btn-'+matchId);
+  if (btn) btn.disabled = false;
+}
+
+// ══════════════════════════════════════
+// SAVE PRONO
+// ══════════════════════════════════════
+async function saveProno(matchId) {
+  const user = state.currentUser;
+  if (!user) return;
+  if (!state.scriptUrl) { showToast('URL Google Sheet manquante', 'error'); return; }
+
+  const scoreH = document.getElementById('sH-'+matchId).value;
+  const scoreA = document.getElementById('sA-'+matchId).value;
+  if (scoreH === '' || scoreA === '') { showToast('Le score est obligatoire', 'error'); return; }
+
+  const btn = document.getElementById('btn-'+matchId);
+  btn.innerHTML = '<span class="spinner"></span>Enregistrement...';
+  btn.disabled = true;
+
+  const payload = {
+    action: 'saveProno', matchId, player: user,
+    scoreH, scoreA,
+    scorers: document.getElementById('sc-'+matchId).value,
+    yCa: document.getElementById('yc-'+matchId).value,
+    rCa: document.getElementById('rc-'+matchId).value,
+    corners: document.getElementById('co-'+matchId).value,
+  };
+
+  try {
+    const res = await fetch(state.scriptUrl, { method:'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.success) {
+      if (!state.allPronos[matchId]) state.allPronos[matchId] = {};
+      state.allPronos[matchId][user] = { scoreH: payload.scoreH, scoreA: payload.scoreA, scorers: payload.scorers, yCa: payload.yCa, rCa: payload.rCa, corners: payload.corners };
+      showToast('✅ Pronostic enregistré !');
+      document.getElementById('card-'+matchId).classList.add('saved');
+      btn.textContent = '✓ Enregistré';
+    } else {
+      showToast('Erreur : ' + (data.error||'inconnue'), 'error');
+      btn.textContent = 'Enregistrer'; btn.disabled = false;
+    }
+  } catch(e) {
+    showToast('Erreur réseau', 'error');
+    btn.textContent = 'Enregistrer'; btn.disabled = false;
+  }
+}
+
+// ══════════════════════════════════════
+// LOAD DATA
+// ══════════════════════════════════════
+async function loadAccounts() {
+  if (!state.scriptUrl) return;
+  try {
+    const res = await fetch(state.scriptUrl + '?action=getAccounts');
+    const data = await res.json();
+    if (data.accounts) state.accounts = data.accounts;
+  } catch(e) {}
+}
+
+async function loadAllData() {
+  if (!state.scriptUrl) return;
+  try {
+    const res = await fetch(state.scriptUrl + '?action=getAll');
+    const data = await res.json();
+    if (data.pronos) state.allPronos = data.pronos;
+    if (data.results) state.allResults = data.results;
+  } catch(e) { console.warn('loadAllData failed', e); }
+}
+
+// ══════════════════════════════════════
+// CLASSEMENT
+// ══════════════════════════════════════
+async function loadClassement() {
+  await loadAllData();
+  const container = document.getElementById('rankingContainer');
+  if (!state.scriptUrl) {
+    container.innerHTML = '<p style="color:var(--text-dim);font-size:13px;">Configurez d\'abord l\'URL du Google Sheet dans ⚙️ Config.</p>';
+    return;
+  }
+
+  const scores = {};
+  PLAYERS.forEach(p => scores[p] = { total:0, exact:0, trend:0 });
+
+  MATCHES.forEach(m => {
+    if (!isMatchLocked(m)) return;
+    const result = state.allResults[m.id];
+    if (!result || result.scoreH === undefined || result.scoreH === '') return;
+    PLAYERS.forEach(p => {
+      const prono = (state.allPronos[m.id]||{})[p];
+      const pts = calcPoints(prono, result);
+      if (pts !== null) {
+        scores[p].total += pts;
+        const pH = parseInt(prono.scoreH), pA = parseInt(prono.scoreA);
+        const rH = parseInt(result.scoreH), rA = parseInt(result.scoreA);
+        if (pH===rH && pA===rA) scores[p].exact++;
+        else {
+          const pT = pH>pA?'H':pH<pA?'A':'D';
+          const rT = rH>rA?'H':rH<rA?'A':'D';
+          if (pT===rT) scores[p].trend++;
+        }
+      }
+    });
+  });
+
+  const sorted = PLAYERS.slice().sort((a,b) => scores[b].total - scores[a].total);
+  const medals = ['🥇','🥈','🥉'];
+  let html = '<table class="ranking-table"><thead><tr><th>#</th><th>Joueur</th><th>Points</th><th>Scores exacts</th><th>Bonnes tendances</th></tr></thead><tbody>';
+  sorted.forEach((p,i) => {
+    html += `<tr class="rank-${i+1}">
+      <td class="rank-num">${medals[i]||i+1}</td>
+      <td class="player-name" style="${p===state.currentUser?'color:var(--gold)':''}">${p=== state.currentUser?'★ ':''} ${p}</td>
+      <td><span class="player-pts">${scores[p].total}<span> pts</span></span></td>
+      <td style="font-size:13px;">${scores[p].exact}</td>
+      <td style="font-size:13px;">${scores[p].trend}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ══════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════
+function renderAdminMatches() {
+  const container = document.getElementById('adminMatchesContainer');
+  const showAll = document.getElementById('showFutureMatches').checked;
+  const toShow = showAll ? MATCHES : MATCHES.filter(m => isMatchLocked(m));
+
+  if (toShow.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-dim);font-size:13px;">Aucun match commencé pour l\'instant.</p>';
+    return;
+  }
+
+  const phaseMap = {};
+  const phases = [];
+  toShow.forEach(m => {
+    if (!phaseMap[m.phase]) { phaseMap[m.phase] = {}; phases.push(m.phase); }
+    if (!phaseMap[m.phase][m.date]) phaseMap[m.phase][m.date] = [];
+    phaseMap[m.phase][m.date].push(m);
+  });
+
+  let html = '';
+  phases.forEach(phase => {
+    html += `<div class="phase-label">${phase}</div>`;
+    Object.keys(phaseMap[phase]).sort().forEach(date => {
+      html += `<div class="day-label">${formatDate(date)}</div>`;
+      phaseMap[phase][date].forEach(m => { html += buildAdminCard(m); });
+    });
+  });
+  container.innerHTML = html;
+}
+
+function buildAdminCard(m) {
+  const result = state.allResults[m.id] || {};
+  const hasResult = result.scoreH !== undefined && result.scoreH !== '';
+  return `<div class="admin-match-card ${hasResult ? 'has-result' : ''}" id="admin-card-${m.id}">
+    <div class="admin-teams">${m.home} vs ${m.away} ${hasResult ? `<span class="result-saved-badge">✅ ${result.scoreH}-${result.scoreA}</span>` : ''}</div>
+    <div class="admin-meta">${m.id} · ${formatDate(m.date)} · ${m.ko} · ${m.venue}</div>
+    <div class="admin-inputs">
+      <div class="admin-field">
+        <label>⚽ Buts ${m.home}</label>
+        <input type="number" min="0" id="rH-${m.id}" value="${result.scoreH??''}" placeholder="0">
+      </div>
+      <div class="admin-field">
+        <label>⚽ Buts ${m.away}</label>
+        <input type="number" min="0" id="rA-${m.id}" value="${result.scoreA??''}" placeholder="0">
+      </div>
+      <div class="admin-field">
+        <label>⚽ Buteurs réels <span class="optional-badge">optionnel</span></label>
+        <input type="text" id="rSc-${m.id}" value="${result.scorers??''}" placeholder="mbappe, kane...">
+      </div>
+      <div class="admin-field">
+        <label>🟨 Cartons jaunes <span class="optional-badge">optionnel</span></label>
+        <input type="number" min="0" id="rYc-${m.id}" value="${result.yCa??''}" placeholder="0">
+      </div>
+      <div class="admin-field">
+        <label>🟥 Cartons rouges <span class="optional-badge">optionnel</span></label>
+        <input type="number" min="0" id="rRc-${m.id}" value="${result.rCa??''}" placeholder="0">
+      </div>
+      <div class="admin-field">
+        <label>🔄 Corners <span class="optional-badge">optionnel</span></label>
+        <input type="number" min="0" id="rCo-${m.id}" value="${result.corners??''}" placeholder="0">
+      </div>
+    </div>
+    <button class="admin-save-btn" onclick="saveResult('${m.id}')">💾 Enregistrer ce résultat</button>
+  </div>`;
+}
+
+async function saveResult(matchId) {
+  if (!state.scriptUrl) { showToast('URL manquante', 'error'); return; }
+  const scoreH = document.getElementById('rH-'+matchId).value;
+  const scoreA = document.getElementById('rA-'+matchId).value;
+  if (scoreH === '' || scoreA === '') { showToast('Score obligatoire', 'error'); return; }
+
+  const payload = {
+    action: 'saveResult', matchId,
+    scoreH, scoreA,
+    scorers: document.getElementById('rSc-'+matchId).value,
+    yCa: document.getElementById('rYc-'+matchId).value,
+    rCa: document.getElementById('rRc-'+matchId).value,
+    corners: document.getElementById('rCo-'+matchId).value,
+  };
+
+  try {
+    const res = await fetch(state.scriptUrl, { method:'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.success) {
+      state.allResults[matchId] = { scoreH: payload.scoreH, scoreA: payload.scoreA, scorers: payload.scorers, yCa: payload.yCa, rCa: payload.rCa, corners: payload.corners };
+      showToast('✅ Résultat enregistré !');
+      renderAdminMatches();
+    } else {
+      showToast('Erreur : ' + (data.error||'inconnue'), 'error');
+    }
+  } catch(e) {
+    showToast('Erreur réseau', 'error');
+  }
+}
+
+async function recalcAll() {
+  const btn = document.querySelector('.recalc-btn');
+  btn.innerHTML = '<span class="spinner"></span>Calcul en cours...';
+  btn.disabled = true;
+  await loadAllData();
+  await loadClassement();
+  showToast('✅ Classement mis à jour !');
+  btn.innerHTML = '🔄 Calculer &amp; MAJ classement';
+  btn.disabled = false;
+}
+
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+function saveConfigFromAuth() {
+  const url = document.getElementById('authSheetUrl').value.trim();
+  state.scriptUrl = url;
+  localStorage.setItem('wc2026_url', url);
+  const status = document.getElementById('authConfigStatus');
+  status.textContent = url ? '✅ URL enregistrée' : '';
+  status.style.color = 'var(--green)';
+}
+
+
+function saveConfig() {
+  state.scriptUrl = document.getElementById('sheetUrl').value.trim();
+  localStorage.setItem('wc2026_url', state.scriptUrl);
+}
+
+async function testConnection() {
+  saveConfig();
+  if (!state.scriptUrl) { showToast('Entrez une URL', 'error'); return; }
+  const note = document.getElementById('configNote');
+  note.style.display = 'block';
+  note.innerHTML = '<span class="spinner"></span> Test...';
+  try {
+    const res = await fetch(state.scriptUrl + '?action=ping');
+    const data = await res.json();
+    note.innerHTML = data.pong
+      ? '✅ Connexion réussie !'
+      : '⚠️ Réponse inattendue.';
+    note.style.color = data.pong ? 'var(--green)' : 'var(--yellow)';
+  } catch(e) {
+    note.innerHTML = '❌ Connexion échouée. Vérifiez l\'URL et les permissions.';
+    note.style.color = 'var(--red)';
+  }
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('sheetUrl').value = state.scriptUrl;
+  // Pre-fill URL on auth screen too
+  const authUrl = document.getElementById('authSheetUrl');
+  if (authUrl) { authUrl.value = state.scriptUrl; if(state.scriptUrl) document.getElementById('authConfigStatus').textContent = '✅ URL configurée'; }
+  const ok = await autoLogin();
+  if (ok) {
+    launchApp();
+  }
+});
+</script>
+</body>
+</html>
